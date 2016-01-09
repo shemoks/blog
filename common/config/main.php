@@ -1,4 +1,6 @@
 <?php
+use common\models\AuthItem;
+
 return [
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
@@ -7,6 +9,10 @@ return [
         ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
+            'cache' => 'cache',
+            'defaultRoles' => [
+                AuthItem::ROLE_USER
+            ],
         ],
     ],
 ];

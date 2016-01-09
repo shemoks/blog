@@ -26,6 +26,8 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
+    public $role;
+
     /**
      * @inheritdoc
      */
@@ -184,5 +186,50 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * Добавление роли авторизованному пользователю
+     */
+    public function afterFind()
+    {
+        parent::afterFind();
+
+        if (is_null($this->role)) {
+            /** @var ManagerInterface $auth */
+            $auth = Yii::$app->authManager;
+            /** @var AuthAssignment $authAssigment */
+            $authAssigment = $this->getAuthAssignment()->one();
+            if (is_object($authAssigment)) {
+                $this->role = $authAssigment->item_name;
+            }
+        }
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        // установка роли пользователя
+        $auth = Yii::$app->authManager;
+        $name = $this->role ? $this->role : AuthItem::ROLE_USER;
+        $role = $auth->getRole($name);
+        if (!$insert) {
+            $auth->revokeAll($this->id);
+        }
+        $auth->assign($role, $this->id);
+    }
+
+    public function getAuthAssignment()
+    {
+        return $this->hasOne(AuthAssignment::className(), ['user_id' => 'id']);
+    }
+
+    public function getAuthItem()
+    {
+        return $this->hasOne(AuthItem::className(), [
+            'name' => 'item_name'
+        ])->viaTable('auth_assignment', [
+            'user_id' => 'id'
+        ]);
     }
 }
