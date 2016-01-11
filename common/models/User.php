@@ -232,4 +232,12 @@ class User extends ActiveRecord implements IdentityInterface
             'user_id' => 'id'
         ]);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getComments()
+    {
+        return $this->hasMany(Comment::className(), ['user_id' => 'id']);
+    }
 }
