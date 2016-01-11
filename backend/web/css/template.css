@@ -1,0 +1,12 @@
+.navbar-nav>.user-menu>.dropdown-menu>li.user-header {
+    height: auto;
+}
+
+.navbar-nav>.user-menu>.dropdown-menu {
+    width: 200px;
+}
+
+.navbar-nav>.messages-menu>.dropdown-menu>li .menu>li>a>p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

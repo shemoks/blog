@@ -2,83 +2,31 @@
 $directoryAsset = Yii::$app->assetManager->getPublishedUrl('@vendor/almasaeed2010/adminlte/dist');
 ?>
 <li class="dropdown messages-menu">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+    <a href="#" class="dropdown-toggle" <?php if ($data['count'] > 0) : ?> data-toggle="dropdown" <?php endif ?>>
         <i class="fa fa-envelope-o"></i>
-        <span class="label label-success">4</span>
+        <span class="label label-success"><?= $data['count'] ?></span>
     </a>
-    <ul class="dropdown-menu">
-        <li class="header">You have 4 messages</li>
-        <li>
-            <!-- inner menu: contains the actual data -->
-            <ul class="menu">
-                <li><!-- start message -->
-                    <a href="#">
-                        <div class="pull-left">
-                            <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle"
-                                 alt="User Image"/>
-                        </div>
-                        <h4>
-                            Support Team
-                            <small><i class="fa fa-clock-o"></i> 5 mins</small>
-                        </h4>
-                        <p>Why not buy a new awesome theme?</p>
-                    </a>
-                </li>
-                <!-- end message -->
-                <li>
-                    <a href="#">
-                        <div class="pull-left">
-                            <img src="<?= $directoryAsset ?>/img/user3-128x128.jpg" class="img-circle"
-                                 alt="user image"/>
-                        </div>
-                        <h4>
-                            AdminLTE Design Team
-                            <small><i class="fa fa-clock-o"></i> 2 hours</small>
-                        </h4>
-                        <p>Why not buy a new awesome theme?</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <div class="pull-left">
-                            <img src="<?= $directoryAsset ?>/img/user4-128x128.jpg" class="img-circle"
-                                 alt="user image"/>
-                        </div>
-                        <h4>
-                            Developers
-                            <small><i class="fa fa-clock-o"></i> Today</small>
-                        </h4>
-                        <p>Why not buy a new awesome theme?</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <div class="pull-left">
-                            <img src="<?= $directoryAsset ?>/img/user3-128x128.jpg" class="img-circle"
-                                 alt="user image"/>
-                        </div>
-                        <h4>
-                            Sales Department
-                            <small><i class="fa fa-clock-o"></i> Yesterday</small>
-                        </h4>
-                        <p>Why not buy a new awesome theme?</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <div class="pull-left">
-                            <img src="<?= $directoryAsset ?>/img/user4-128x128.jpg" class="img-circle"
-                                 alt="user image"/>
-                        </div>
-                        <h4>
-                            Reviewers
-                            <small><i class="fa fa-clock-o"></i> 2 days</small>
-                        </h4>
-                        <p>Why not buy a new awesome theme?</p>
-                    </a>
-                </li>
-            </ul>
-        </li>
-        <li class="footer"><a href="#">See All Messages</a></li>
-    </ul>
+    <?php if ($data['count'] > 0) : ?>
+        <ul class="dropdown-menu">
+            <li class="header"><?= $data['countText'] ?></li>
+            <li>
+                <ul class="menu">
+                    <?php foreach ($data['comments'] as $comment): ?>
+                        <li><!-- start message -->
+                            <a href="<?= \yii\helpers\Url::to('/comment/view/' . $comment->id) ?>">
+                                <div class="pull-left">
+                                    <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle"
+                                         alt="User Image"/>
+                                </div>
+                                <h4><?= $comment->user->username ?></h4>
+                                <p><?= $comment->text ?></p>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                    <!-- end message -->
+                </ul>
+            </li>
+            <li class="footer"><a href="<?= \yii\helpers\Url::to('/comment') ?>"><?= Yii::t('app', 'посмотреть все коментарии') ?></a></li>
+        </ul>
+    <?php endif; ?>
 </li>

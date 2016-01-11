@@ -10,6 +10,7 @@ use Yii;
  * @property integer $id
  * @property string $tittle
  * @property string $content
+ * @property integer $user_id
  * @property string $main_photo
  * @property string $meta_description
  * @property string $meta_keywords
@@ -20,6 +21,7 @@ use Yii;
  *
  * @property CategoryPost[] $categoryPosts
  * @property Comment[] $comments
+ * @property User $user
  */
 class Post extends \yii\db\ActiveRecord
 {
@@ -37,9 +39,10 @@ class Post extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['tittle'], 'required'],
-            [['status', 'created_at', 'updated_at', 'deleted_at'], 'integer'],
-            [['tittle', 'content', 'main_photo', 'meta_description', 'meta_keywords'], 'string', 'max' => 255]
+            [['tittle', 'content'], 'required'],
+            [['content'], 'string'],
+            [['user_id', 'status', 'created_at', 'updated_at', 'deleted_at'], 'integer'],
+            [['tittle', 'main_photo', 'meta_description', 'meta_keywords'], 'string', 'max' => 255]
         ];
     }
 
@@ -52,6 +55,7 @@ class Post extends \yii\db\ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'tittle' => Yii::t('app', 'Tittle'),
             'content' => Yii::t('app', 'Content'),
+            'user_id' => Yii::t('app', 'User ID'),
             'main_photo' => Yii::t('app', 'Main Photo'),
             'meta_description' => Yii::t('app', 'Meta Description'),
             'meta_keywords' => Yii::t('app', 'Meta Keywords'),
@@ -76,5 +80,19 @@ class Post extends \yii\db\ActiveRecord
     public function getComments()
     {
         return $this->hasMany(Comment::className(), ['post_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
+    public function getNewPosts()
+    {
+        return $this->find()->where($this->tableName() . '.`status` IS NULL')->joinWith('user')->all();
+
     }
 }

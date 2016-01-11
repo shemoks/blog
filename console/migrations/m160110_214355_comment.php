@@ -13,7 +13,8 @@ class m160110_214355_comment extends Migration
         $this->createTable('{{%comment}}', [
             'id'         => $this->primaryKey(),
             'post_id'    => $this->integer()->notNull(),
-            'status'     => Schema::TYPE_SMALLINT . ' DEFAULT NULL',
+            'status'     => $this->smallInteger(),
+            'text'       => $this->text()->notNull(),
             'user_id'    => $this->integer(),
             'created_at' => $this->integer(),
             'updated_at' => $this->integer(),

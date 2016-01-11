@@ -98,7 +98,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         return static::findOne([
             'password_reset_token' => $token,
-            'status' => self::STATUS_ACTIVE,
+            'status'               => self::STATUS_ACTIVE,
         ]);
     }
 
@@ -114,7 +114,7 @@ class User extends ActiveRecord implements IdentityInterface
             return false;
         }
 
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
+        $timestamp = (int)substr($token, strrpos($token, '_') + 1);
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
         return $timestamp + $expire >= time();
     }
@@ -206,6 +206,19 @@ class User extends ActiveRecord implements IdentityInterface
         }
     }
 
+    public function attributeLabels()
+    {
+        return [
+            'id'         => Yii::t('app', 'ID'),
+            'username'   => Yii::t('app', 'Username'),
+            'auth_key'   => Yii::t('app', 'Auth Key'),
+            'email'      => Yii::t('app', 'Email'),
+            'status'     => Yii::t('app', 'Status'),
+            'created_at' => Yii::t('app', 'Created At'),
+            'updated_at' => Yii::t('app', 'Updated At'),
+        ];
+    }
+
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
@@ -239,5 +252,31 @@ class User extends ActiveRecord implements IdentityInterface
     public function getComments()
     {
         return $this->hasMany(Comment::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @param bool $isActive
+     * @param bool $asObject
+     * @return array|\yii\db\ActiveQuery|\yii\db\ActiveRecord[]
+     */
+    public function getUserList($isActive = true, $asObject = false)
+    {
+        $users = $this->find();
+        if ($isActive) {
+            $users->where(['status' => self::STATUS_ACTIVE]);
+        }
+        if ($asObject) {
+            $users = $users->all();
+        }
+
+        return $users;
+    }
+
+    public static function getStatuses()
+    {
+        return [
+            self::STATUS_ACTIVE  => 'Активный',
+            self::STATUS_DELETED => 'Не активный',
+        ];
     }
 }

@@ -13,15 +13,18 @@ class m160110_213117_post extends Migration
         $this->createTable('{{%post}}', [
             'id'               => $this->primaryKey(),
             'tittle'           => $this->string()->notNull(),
-            'content'          => $this->string(),
+            'content'          => $this->text()->notNull(),
+            'user_id'          => $this->integer(),
             'main_photo'       => $this->string(),
             'meta_description' => $this->string(),
             'meta_keywords'    => $this->string(),
-            'status'           => Schema::TYPE_SMALLINT . ' DEFAULT NULL',
+            'status'           => $this->smallInteger(),
             'created_at'       => $this->integer(),
             'updated_at'       => $this->integer(),
             'deleted_at'       => $this->integer(),
         ], $tableOptions);
+        $this->createIndex('idx_post_user_id', '{{%post}}', 'user_id');
+        $this->addForeignKey('fk_post_user_id', '{{%post}}', 'user_id', '{{%user}}', 'id', 'NO ACTION', 'NO ACTION');
     }
 
     public function down()
