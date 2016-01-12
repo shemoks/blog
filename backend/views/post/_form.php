@@ -1,6 +1,10 @@
 <?php
 
+use common\models\Category;
+use common\models\CategoryPost;
+use common\models\Post;
 use common\models\User;
+use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -8,6 +12,7 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model common\models\Post */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $modelCategory array */
 ?>
 
 <div class="post-form">
@@ -20,6 +25,17 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'user_id')
         ->dropDownList(ArrayHelper::map((new User())->getUserList()->asArray()->all(),'id','username')) ?>
+    <?=
+    $form->field($model, 'category_id')
+        ->widget(Select2::classname(), [
+            'data' => $modelCategory,
+            'options' => ['placeholder' => 'Select a category'],
+            'pluginOptions' => [
+                'allowClear' => true,
+                'multiple' => true
+            ],
+        ])->label('category');
+    ?>
 
     <?= $form->field($model, 'main_photo')->textInput(['maxlength' => true]) ?>
 

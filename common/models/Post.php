@@ -19,12 +19,14 @@ use Yii;
  * @property integer $updated_at
  * @property integer $deleted_at
  *
- * @property CategoryPost[] $categoryPosts
+ * @property CategoryPost[] $categoryPost
  * @property Comment[] $comments
  * @property User $user
+ * @property mixed category
  */
 class Post extends \yii\db\ActiveRecord
 {
+    public $category_id;
     /**
      * @inheritdoc
      */
@@ -42,7 +44,8 @@ class Post extends \yii\db\ActiveRecord
             [['tittle', 'content'], 'required'],
             [['content'], 'string'],
             [['user_id', 'status', 'created_at', 'updated_at', 'deleted_at'], 'integer'],
-            [['tittle', 'main_photo', 'meta_description', 'meta_keywords'], 'string', 'max' => 255]
+            [['tittle', 'main_photo', 'meta_description', 'meta_keywords'], 'string', 'max' => 255],
+            ['category_id','safe']
         ];
     }
 
@@ -60,6 +63,7 @@ class Post extends \yii\db\ActiveRecord
             'meta_description' => Yii::t('app', 'Meta Description'),
             'meta_keywords' => Yii::t('app', 'Meta Keywords'),
             'status' => Yii::t('app', 'Status'),
+            'category_id' => Yii::t('app', 'Category id'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
             'deleted_at' => Yii::t('app', 'Deleted At'),
@@ -69,11 +73,14 @@ class Post extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCategoryPosts()
+    public function getCategory()
+    {
+        return $this->hasMany(Category::className(), ['id' => 'category_id'])->viaTable('category_post',['post_id' => 'id']);
+    }
+    public function getCategoryPost()
     {
         return $this->hasMany(CategoryPost::className(), ['post_id' => 'id']);
     }
-
     /**
      * @return \yii\db\ActiveQuery
      */

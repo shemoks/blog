@@ -12,6 +12,7 @@ use common\models\Post;
  */
 class PostSearch extends Post
 {
+
     /**
      * @inheritdoc
      */
@@ -56,12 +57,13 @@ class PostSearch extends Post
         }
 
         $query->andFilterWhere([
-            'id' => $this->id,
-            'user_id' => $this->user_id,
-            'status' => $this->status,
+            'id'         => $this->id,
+            'user_id'    => $this->user_id,
+            'status'     => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,
+
         ]);
 
         $query->andFilterWhere(['like', 'tittle', $this->tittle])

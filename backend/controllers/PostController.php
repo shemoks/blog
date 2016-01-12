@@ -2,9 +2,13 @@
 
 namespace backend\controllers;
 
+use common\models\AuthItem;
+use common\models\Category;
 use Yii;
 use common\models\Post;
 use common\models\search\PostSearch;
+use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -17,8 +21,19 @@ class PostController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['update', 'create', 'index','view'],
+                'rules' => [
+                   [
+                        'actions' => ['update', 'create','index','view'],
+                        'allow'   => true,
+                        'roles'   => [AuthItem::ROLE_MODER],
+                    ],
+                ],
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class'   => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
                 ],
@@ -36,7 +51,7 @@ class PostController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
+            'searchModel'  => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -53,21 +68,46 @@ class PostController extends Controller
         ]);
     }
 
+    public function actionCreate()
+    {
+        $model = new Post();
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            /** @var Category[] $categories */
+            $categories = Category::find()->where(['id' => $model->category_id])->all();
+            foreach ($categories as $category) {
+                $model->link('category', $category);
+            }
+            return $this->redirect(['view', 'id' => $model->id]);
+        } else {
+            return $this->render('create', array(
+                'model'         => $model,
+                'modelCategory' => ArrayHelper::map(Category::find()->all(), 'id', 'tittle')
+            ));
+        }
+    }
+
     /**
      * Updates an existing Post model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
      */
+
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
+        $model->category_id = ArrayHelper::getColumn($model->category, 'id');
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $model->unlinkAll('category', true);
+            $categories = Category::find()->where(['id' => $model->category_id])->all();
+            foreach ($categories as $category) {
+                $model->link('category', $category);
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                'model'         => $model,
+                'modelCategory' => ArrayHelper::map(Category::find()->all(), 'id', 'tittle')
             ]);
         }
     }
@@ -80,8 +120,9 @@ class PostController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        $model = $this->findModel($id);
+        $model->unlinkAll('category', true);
+        $model->delete();
         return $this->redirect(['index']);
     }
 
@@ -94,7 +135,7 @@ class PostController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Post::find()->where($id)->joinWith('user')->one()) !== null) {
+        if (($model = Post::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

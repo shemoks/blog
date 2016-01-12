@@ -87,8 +87,9 @@ class CategoryController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        $model = $this->findModel($id);
+        $model->unlinkAll('categoryPosts', true);
+        $model->delete();
         return $this->redirect(['index']);
     }
 

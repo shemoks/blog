@@ -21,6 +21,9 @@ use Yii;
  */
 class Category extends \yii\db\ActiveRecord
 {
+    const STATUS_ACTIVE = 10;
+    const STATUS_DELETED = 0;
+
     /**
      * @inheritdoc
      */
@@ -65,5 +68,24 @@ class Category extends \yii\db\ActiveRecord
     public function getCategoryPosts()
     {
         return $this->hasMany(CategoryPost::className(), ['category_id' => 'id']);
+    }
+    public function getCategoryList($isActive = true, $asObject = false)
+    {
+        $users = $this->find();
+        if ($isActive) {
+            $users->where(['status' => self::STATUS_ACTIVE]);
+        }
+        if ($asObject) {
+            $users = $users->all();
+        }
+
+        return $users;
+    }
+    public static function getStatuses()
+    {
+        return [
+            self::STATUS_ACTIVE  => 'Активный',
+            self::STATUS_DELETED => 'Не активный',
+        ];
     }
 }
