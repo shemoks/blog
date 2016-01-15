@@ -4,6 +4,7 @@ use common\models\Category;
 use common\models\CategoryPost;
 use common\models\Post;
 use common\models\User;
+use dosamigos\ckeditor\CKEditor;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -21,7 +22,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'tittle')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'content')->widget(CKEditor::className(), [
+        'options' => ['rows' => 6],
+        'preset' => 'basic'
+    ]) ?>
+
 
     <?= $form->field($model, 'user_id')
         ->dropDownList(ArrayHelper::map((new User())->getUserList()->asArray()->all(),'id','username')) ?>

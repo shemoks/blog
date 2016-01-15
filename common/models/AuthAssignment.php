@@ -1,6 +1,8 @@
 <?php
 namespace common\models;
+
 use Yii;
+
 /**
  * This is the model class for table "auth_assignment".
  *
@@ -20,6 +22,7 @@ class AuthAssignment extends \yii\db\ActiveRecord
     {
         return 'auth_assignment';
     }
+
     /**
      * @inheritdoc
      */
@@ -31,17 +34,19 @@ class AuthAssignment extends \yii\db\ActiveRecord
             [['item_name'], 'string', 'max' => 64]
         ];
     }
+
     /**
      * @inheritdoc
      */
     public function attributeLabels()
     {
         return [
-            'item_name' => 'Item Name',
-            'user_id' => 'User ID',
+            'item_name'  => 'Item Name',
+            'user_id'    => 'User ID',
             'created_at' => 'Created At',
         ];
     }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -49,6 +54,7 @@ class AuthAssignment extends \yii\db\ActiveRecord
     {
         return $this->hasOne(AuthItem::className(), ['name' => 'item_name']);
     }
+
     /**
      * @return \yii\db\ActiveQuery
      */

@@ -1,14 +1,10 @@
 <?php
 
-namespace backend\controllers;
+namespace frontend\controllers;
 
-use common\models\AuthItem;
-use common\models\Category;
 use Yii;
 use common\models\Post;
-use common\models\search\PostSearch;
-use yii\filters\AccessControl;
-use yii\helpers\ArrayHelper;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -18,11 +14,12 @@ use yii\filters\VerbFilter;
  */
 class PostController extends Controller
 {
+    //public $layout = "FrontendLayout";
     public function behaviors()
     {
         return [
             'verbs' => [
-                'class'   => VerbFilter::className(),
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
                 ],
@@ -36,11 +33,11 @@ class PostController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new PostSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = new ActiveDataProvider([
+            'query' => Post::find(),
+        ]);
 
         return $this->render('index', [
-            'searchModel'  => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -57,21 +54,21 @@ class PostController extends Controller
         ]);
     }
 
+    /**
+     * Creates a new Post model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
     public function actionCreate()
     {
         $model = new Post();
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            /** @var Category[] $categories */
-            $categories = Category::find()->where(['id' => $model->category_id])->all();
-            foreach ($categories as $category) {
-                $model->link('category', $category);
-            }
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->render('create', array(
-                'model'         => $model,
-                'modelCategory' => ArrayHelper::map(Category::find()->all(), 'id', 'tittle')
-            ));
+            return $this->render('create', [
+                'model' => $model,
+            ]);
         }
     }
 
@@ -81,22 +78,15 @@ class PostController extends Controller
      * @param integer $id
      * @return mixed
      */
-
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->category_id = ArrayHelper::getColumn($model->category, 'id');
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $model->unlinkAll('category', true);
-            $categories = Category::find()->where(['id' => $model->category_id])->all();
-            foreach ($categories as $category) {
-                $model->link('category', $category);
-            }
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
-                'model'         => $model,
-                'modelCategory' => ArrayHelper::map(Category::find()->all(), 'id', 'tittle')
+                'model' => $model,
             ]);
         }
     }
@@ -109,9 +99,8 @@ class PostController extends Controller
      */
     public function actionDelete($id)
     {
-        $model = $this->findModel($id);
-        $model->unlinkAll('category', true);
-        $model->delete();
+        $this->findModel($id)->delete();
+
         return $this->redirect(['index']);
     }
 

@@ -1,6 +1,7 @@
 <?php
 namespace frontend\models;
 
+use common\models\AuthItem;
 use common\models\User;
 use yii\base\Model;
 use Yii;
@@ -13,6 +14,7 @@ class SignupForm extends Model
     public $username;
     public $email;
     public $password;
+    public $needToBlog = false;
 
     /**
      * @inheritdoc
@@ -33,9 +35,19 @@ class SignupForm extends Model
 
             ['password', 'required'],
             ['password', 'string', 'min' => 6],
+            ['needToBlog','safe']
         ];
     }
 
+    public function attributeLabels()
+    {
+        return [
+            'needToBlog' => Yii::t('app', 'Хочу писать посты'),
+            'username'   => Yii::t('app', 'Имя'),
+            'email'      => Yii::t('app', 'email'),
+            'password'   => Yii::t('app', 'Пароль'),
+        ];
+    }
     /**
      * Signs user up.
      *
@@ -49,6 +61,9 @@ class SignupForm extends Model
             $user->email = $this->email;
             $user->setPassword($this->password);
             $user->generateAuthKey();
+            if($this->needToBlog) {
+                $user->role = AuthItem::ROLE_BLOGGER;
+            }
             if ($user->save()) {
                 return $user;
             }
