@@ -31,12 +31,7 @@ use yii\widgets\Breadcrumbs;
 
 <?php
 
-$menuItems = [
-    [
-        'link' => Url::to(['#']),
-        'text' => Yii::t('app', 'qqqqqqqqqq'),
-    ],
-];
+
 if (!Yii::$app->user->isGuest) {
     if (Yii::$app->user->identity->role == AuthItem::ROLE_BLOGGER) {
         $menuItems[] = [
@@ -115,7 +110,7 @@ echo MenuWidget::widget([
     <?= $content ?>
                         <div class='clear'></div>
                         <!--КНОПКИ  ПЕРЕДЕЛАТЬ ПОТОМ-->
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <!--<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="row">
                                 <div class="blog-pager" id="blog-pager">
                                     <div class="blogger-pager"><span class="blog-pager-p">1</span>
@@ -125,7 +120,7 @@ echo MenuWidget::widget([
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
                         <!--КНОПКИ-->
                         <div class='clear'></div>
                     </div>
@@ -134,7 +129,7 @@ echo MenuWidget::widget([
             <?= RightColumn::widget()?>
 </div>
 
-<?= FooterWidget::widget()?>
+<?/*= FooterWidget::widget()*/?>
 
 <div id='footer'>
     <p class='footer-link'>

@@ -2424,7 +2424,8 @@ a.thumbnail.active, a.thumbnail:focus, a.thumbnail:hover {
 #list-main {
     margin: 0 auto;
     float: left;
-    padding-bottom: 20px
+    padding-bottom: 20px;
+    width: 100%;
 }
 
 .container, .container-fluid {

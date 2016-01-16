@@ -1,6 +1,9 @@
 <?php
 namespace frontend\controllers;
 
+use common\models\Category;
+use common\models\Post;
+use common\models\User;
 use Yii;
 use common\models\LoginForm;
 use frontend\models\PasswordResetRequestForm;
@@ -8,6 +11,7 @@ use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 use yii\base\InvalidParamException;
+use yii\data\Pagination;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -26,12 +30,12 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                'only'  => ['logout', 'signup'],
                 'rules' => [
                     [
-                        'allow' => true,
-                        'actions'=>['login','error', 'signup'],
-                        'roles' => ['?'],
+                        'allow'   => true,
+                        'actions' => ['login', 'error', 'signup'],
+                        'roles'   => ['?'],
                     ],
                     [
                         'allow' => true,
@@ -39,8 +43,8 @@ class SiteController extends Controller
                     ],
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
+            'verbs'  => [
+                'class'   => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -54,11 +58,11 @@ class SiteController extends Controller
     public function actions()
     {
         return [
-            'error' => [
+            'error'   => [
                 'class' => 'yii\web\ErrorAction',
             ],
             'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
+                'class'           => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
         ];
@@ -71,7 +75,44 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $dataProvider = (new Post())->getPostsToMain();
+        $countQuery = clone $dataProvider;
+        $pages = new Pagination([
+            'totalCount'      => $countQuery->count(),
+            'defaultPageSize' => 10
+        ]);
+        $model = $dataProvider->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
+
+        return $this->render('index', [
+            'model' => $model,
+            'pages' => $pages,
+        ]);
+    }
+
+    /**
+     * @param $id
+     * @return string
+     */
+    public function actionCategory($id)
+    {
+        $dataProvider = Category::find()
+            ->joinWith('categoryPosts')
+            ->where(Category::tableName() . '.id = ' . $id);
+        $countQuery = clone $dataProvider;
+        $pages = new Pagination([
+            'totalCount'      => $countQuery->count(),
+            'defaultPageSize' => 10
+        ]);
+        $model = $dataProvider->offset($pages->offset)
+            ->limit($pages->limit)
+            ->one();
+
+        return $this->render('post', [
+            'model' => $model,
+            'pages' => $pages,
+        ]);
     }
 
     /**
@@ -206,6 +247,15 @@ class SiteController extends Controller
 
         return $this->render('resetPassword', [
             'model' => $model,
+        ]);
+    }
+
+    public function actionPosts()
+    {
+        $dataProvider = Post::find()->All();
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
         ]);
     }
 }

@@ -3,6 +3,7 @@ use common\models\AuthItem;
 
 return [
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
+    'name'=>'My Blog',
     'language' => 'ru-Ru',
     'components' => [
         'i18n' => [

@@ -2,8 +2,8 @@
     <?php
     use common\models\Post;
     use yii\widgets\LinkPager;
-
-    foreach ($model as $data) {
+    $this->title = 'Posts ' . $model->tittle;
+    foreach ($model->categoryPosts as $data) {
         ?>
         <div class='post-div'>
             <h2 class='jqmaintitle'>
@@ -51,17 +51,9 @@
                 </span>
                 <span class='post-labels'>
                                     <i class='fa fa-tags'></i>
-                    <?php
-                    if (isset($data->category)) {
-                        foreach ($data->category as $category) {
-                            ?>
                             <a href='#' rel='tag'>
-                                <?=$category->tittle?>
+                                <?=$model->tittle?>
                             </a>
-                        <?php
-                        }
-                    }
-                    ?>
                 </span>
             </div>
         </div>
