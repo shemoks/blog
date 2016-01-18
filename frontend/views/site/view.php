@@ -1,14 +1,19 @@
 <?php
-/** @var \common\models\Post $model */
+
 //$model
-use common\models\AuthItem;
+
 use common\models\Post;
 use common\widgets\similar\SimilarWidget;
 use common\widgets\social\SocialWidget;
 use dosamigos\ckeditor\CKEditor;
-use kartik\select2\Select2;
-use yii\bootstrap\ActiveForm;
-use yii\bootstrap\Html;
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+
+
+
+
+/* @var $this yii\web\View */
+/* @var $model common\models\Post */
 
 $this->title = $model->tittle;
 ?>
@@ -71,7 +76,6 @@ $this->title = $model->tittle;
                 ])?>
 
 
-
             <div class="clear"></div>
 
             <div class="post-footer">
@@ -96,8 +100,6 @@ $this->title = $model->tittle;
 
         <div class="comments-content">
             <div id="comment-holder">
-                <div>
-                    <div>
                         <div class="comment-thread">
                             <ol>
                                 <li id="bc_0_6B" class="comment" >
@@ -105,7 +107,7 @@ $this->title = $model->tittle;
                                         <img src="#">
                                     </div>
                                     <?php
-                                    foreach($model->comments as $comment) :?>
+                                    foreach($model->comments as $comment) {?>
                                     <div class="comment-block">
                                         <div  class="comment-header">
                                             <cite class="user">
@@ -124,7 +126,7 @@ $this->title = $model->tittle;
                                                 <?=$comment->text?>
                                             </p>
                                     </div>
-                                    <?php ?>
+                                    <?php }?>
 
                                     <div class="comment-replybox-single"></div>
                                 </li>
@@ -138,27 +140,26 @@ $this->title = $model->tittle;
                 </div>
             </div>
         </div>
-    </div>
+
 <div class="send-comment">
-        <?php
-        if(!Yii::$app->user->isGuest ){
-            $modelComment = new \common\models\Comment();
-            $form = ActiveForm::begin([
-                'id'                   => 'comment',
-                'options'              => ['class' => 'form-horizontal'],
-            ]);
+    <?php
+    if(!Yii::$app->user->isGuest ){
+        $modelComment = new \common\models\Comment();
+        $form = ActiveForm::begin([
+            'id'                   => 'comment',
+            'options'              => ['class' => 'form-horizontal'],
+        ]);
+        $form->field($modelComment, 'text')->widget(CKEditor::className(), [
+            'options' => ['rows' => 6],
+            'preset' => 'basic'
+        ]);
+        $form->field($modelComment, 'post_id')->hiddenInput(['value'=>$model->id])->label(false);
+        $form->field($modelComment, 'user_id')->hiddenInput(['value'=>Yii::$app->user->id])->label(false);
 
-            $form->field($modelComment, 'text')->widget(CKEditor::className(), [
-                'options' => ['rows' => 6],
-                'preset' => 'basic'
-            ]);
-            $form->field($modelComment, 'post_id')->hiddenInput(['value'=>$model->id])->label(false);
-            $form->field($modelComment, 'user_id')->hiddenInput(['value'=>Yii::$app->user->id])->label(false);
-
-            Html::submitButton('Отправиьь', ['class' => 'btn btn-success']);
-            ActiveForm::end();
-        }
-        ?>
+        Html::submitButton('Отправиьь', ['class' => 'btn btn-success']);
+        ActiveForm::end();
+    }
+    ?>
 </div>
 
 </div>

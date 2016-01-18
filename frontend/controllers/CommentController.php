@@ -58,13 +58,10 @@ class CommentController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate($id_user,$id_post)
+    public function actionCreate()
     {
         $model = new Comment();
-        $model->user_id=$id_user;
-        $model->post_id=$id_post;
-        return $this->render('comments', [
-            'model' => $model]);
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
