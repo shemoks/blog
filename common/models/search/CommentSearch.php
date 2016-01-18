@@ -2,6 +2,7 @@
 
 namespace common\models\search;
 
+use common\models\Post;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -41,7 +42,7 @@ class CommentSearch extends Comment
      */
     public function search($params)
     {
-        $query = Comment::find();
+        $query = Comment::find()->joinWith('user')->joinWith('post');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

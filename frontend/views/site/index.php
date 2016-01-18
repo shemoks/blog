@@ -1,14 +1,16 @@
 <div id='list-main'>
     <?php
     use common\models\Post;
+    use yii\helpers\Url;
     use yii\widgets\LinkPager;
 
     foreach ($model as $data) {
         ?>
         <div class='post-div'>
             <h2 class='jqmaintitle'>
+                <a href="/site/view/<?=$data->id?>">
                 <?= $data->tittle; ?>
-
+                </a>
             </h2>
          <div class='post-header-home'>
                                 <span class='post-author vcard'>
@@ -19,6 +21,7 @@
                                 </span>
             </div>
             <div class='homapge-thumb'>
+
                 <div class='post hentry'>
                     <div class='post-min-content'>
                         <div class="separator">
@@ -27,20 +30,23 @@
                                      src="<?= Post::$photoLink . $data->main_photo ?>"/>
                             </a>
                         </div>
+                        <a href="/site/view/<?=$data->id?>">
                         <p>
                             <?= $data->content; ?><br/>
                         </p>
+                        </a>
                     </div>
                     <div class='s-clear'>
                     </div>
                     <div class='rmlink'>
-                        <a href='#'>
-                            Read More
+                        <a href='/site/view/<?=$data->id?>'>
+                           Read More
                         </a>
                     </div>
                     <div class='s-clear'>
                     </div>
                 </div>
+
             </div>
             <div class='post-header-label'>
                 <span class='post-timestamp'>

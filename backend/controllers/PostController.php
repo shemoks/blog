@@ -89,12 +89,7 @@ class PostController extends Controller
     {
         $model = $this->findModel($id);
         $model->category_id = ArrayHelper::getColumn($model->category, 'id');
-        if (Yii::$app->request->isPost) {
-            $model->load(Yii::$app->request->post());
-            $model->main_photo = UploadedFile::getInstance($model, 'main_photo');
-            $model->main_photo->name = time() . substr(strrchr($model->main_photo->name, '.'), 0);
-            $model->upload();
-            $model->save();
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $model->unlinkAll('category', true);
             $categories = Category::find()->where(['id' => $model->category_id])->all();
             foreach ($categories as $category) {
@@ -121,7 +116,9 @@ class PostController extends Controller
         function actionDelete($id)
         {
             $model = $this->findModel($id);
-            $model->update(['deleted_at' => time()]);
+            $model->deleted_at = time();
+            $model->status = 0;
+            $model->update();
             $model->unlinkAll('category', true);
             $categories = Category::find()->where(['id' => $model->category_id])->all();
             foreach ($categories as $category) {

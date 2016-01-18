@@ -80,9 +80,11 @@ echo MenuWidget::widget([
                     <div class='widget Header' id='Header1'>
                         <div id='header-inner'>
                             <div class='titlewrapper'>
-                                <h1 class='h-title'>
-                                    <?=Yii::$app->name?>
-                                </h1>
+                                <a href="/">
+                                    <h1 class='h-title'>
+                                        <?=Yii::$app->name?>
+                                    </h1>
+                                </a>
                             </div>
                         </div>
                     </div>

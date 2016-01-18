@@ -1,15 +1,14 @@
 <?php
-
 use common\models\Category;
 use common\models\CategoryPost;
 use common\models\Post;
 use common\models\User;
 use dosamigos\ckeditor\CKEditor;
+use dosamigos\fileupload\FileUpload;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-
 /* @var $this yii\web\View */
 /* @var $model common\models\Post */
 /* @var $form yii\widgets\ActiveForm */
@@ -19,10 +18,10 @@ use yii\widgets\ActiveForm;
 <div class="post-form">
 
     <?php $form = ActiveForm::begin([
-       'id'                   => 'post',
+        'id'                   => 'post',
         //    'enableClientValidation' => false,
-      //  'enableAjaxValidation' => true,
-      'options'              => ['class' => 'form-horizontal', 'enctype' => 'multipart/form-data'],
+        //  'enableAjaxValidation' => true,
+        'options'              => ['class' => 'form-horizontal', 'enctype' => 'multipart/form-data'],
     ]); ?>
 
     <?= $form->field($model, 'tittle')->textInput(['maxlength' => true]) ?>
@@ -46,9 +45,37 @@ use yii\widgets\ActiveForm;
             ],
         ])->label('category');
     ?>
-   <?= $form->field($model, 'main_photo')->fileInput() ?>
+    <?= FileUpload::widget([
+        'model' => $model,
+        'attribute' => 'main_photo',
+        'url' => ['/post/upload'], // your url, this is just for demo purposes,
+        'options' => ['accept' => 'image/*'],
+        'clientOptions' => [
+            'maxFileSize' => 2000000
+        ],
+        'clientEvents' => [
+            'fileuploaddone' => 'function(e, data) {
+                                var responseData = data.response().result;
+                                $(".photo").attr("src","' . Post::$photoLink . '"+responseData.filePath);
+                                $("#post-photo").val(responseData.filePath);
+                                return false;
+                            }',
+            'fileuploadfail' => 'function(e, data) {
+                                console.log(e);
+                                console.log(data);
+                            }',
+        ],
+    ]);?>
+    <input type="text" class="form-control input-name" readonly="" value="<?= isset($model->main_photo) ? $model->main_photo : '' ?>">
+    <img src="<?= isset($model->main_photo) ? Post::$photoLink . $model->main_photo : '' ?>" alt="" class="photo"/>
+</div>
+<?php echo Html::activeHiddenInput($model, 'main_photo', [
+    'id'    => 'post-photo',
+    'value' => $model->main_photo
+]) ?>
 
-    <?= $form->field($model, 'meta_description')->textInput(['maxlength' => true]) ?>
+
+<?= $form->field($model, 'meta_description')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'meta_keywords')->textInput(['maxlength' => true]) ?>
 
@@ -59,12 +86,11 @@ use yii\widgets\ActiveForm;
     </div>
 
     <?php ActiveForm::end();
-
     if (!empty($model->main_photo)) { ?>
         <div class="image">
             <img src="/images/<?= $model->main_photo ?>">
         </div>
     <?php }
-     ?>
+    ?>
 
 </div>

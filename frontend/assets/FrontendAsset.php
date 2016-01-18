@@ -22,8 +22,6 @@ class FrontendAsset extends AssetBundle
         'css/main.css'
     ];
     public $js = [
-        'js/jquery.js',
-        'js/jquery_drop.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

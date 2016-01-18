@@ -115,6 +115,28 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionView($id)
+    {
+        $model = Post::find()
+            ->joinWith('category')
+            ->joinWith('user')
+            ->joinWith('comments')
+            ->where(Post::tableName() . '.id = ' . $id)->one();
+
+        return $this->render('view', [
+            'model' => $model]);
+    }
+
+
+    public function actionComments($id)
+    {
+        $model = Post::find()
+            ->joinWith('comments')
+            ->where(Post::tableName() . '.id = ' . $id)->all();
+
+        return $this->render('comments', [
+            'model' => $model]);
+    }
     /**
      * Logs in a user.
      *
@@ -269,17 +291,17 @@ class SiteController extends Controller
         $id = yii::$app->user->id;
         $model = Post::find()
             ->where(['user_id' => $id])->All();
-       /* $countQuery = clone $dataProvider;
-        $pages = new Pagination([
-            'totalCount'      => $countQuery->count(),
-            'defaultPageSize' => 10
-        ]);
-        $model = $dataProvider->offset($pages->offset)
-            ->limit($pages->limit)
-            ->one();*/
+        /* $countQuery = clone $dataProvider;
+         $pages = new Pagination([
+             'totalCount'      => $countQuery->count(),
+             'defaultPageSize' => 10
+         ]);
+         $model = $dataProvider->offset($pages->offset)
+             ->limit($pages->limit)
+             ->one();*/
         return $this->render('posts', [
             'model' => $model,
-      /*      'pages' => $pages,*/
+            /*      'pages' => $pages,*/
         ]);
     }
 }

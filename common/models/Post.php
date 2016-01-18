@@ -19,7 +19,7 @@ use yii\web\UploadedFile;
  * @property integer $created_at
  * @property integer $updated_at
  * @property integer $deleted_at
- *
+ *@property integer $category_id
  * @property CategoryPost[] $categoryPost
  * @property Comment[] $comments
  * @property User $user
@@ -145,21 +145,22 @@ class Post extends \yii\db\ActiveRecord
             ->joinWith('user')
             ->joinWith('category')
             ->orderBy([Post::tableName() . '.id' => SORT_DESC])
-            ->where($this->tableName() . '.`deleted_at` IS NULL');
+            ->where($this->tableName() . '.`deleted_at` IS NULL')
+            ->andWhere($this->tableName() . '.`status` = 1');
     }
 
+    public function getPostsTo()
+    { $query = Post::find();
+        return $query
+            ->joinWith('user')
+            ->joinWith('category')
+            ->orderBy([Post::tableName() . '.id' => SORT_DESC])
+            ->where($this->tableName() . '.`deleted_at` IS NULL')
+            ->andWhere($this->tableName() . '.`status` = 1');
+    }
     /**
      * @return bool
      *
      */
-    public function upload()
-    {
-        if ($this->validate()) {
-            $this->main_photo->saveAs('images/' . $this->main_photo->baseName . '.' . $this->main_photo->extension);
-            $this->main_photo = $this->main_photo->baseName . '.' . $this->main_photo->extension;
-            return true;
-        } else {
-            return false;
-        }
-    }
+
 }

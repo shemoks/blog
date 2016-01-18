@@ -34,7 +34,7 @@
                     <div class='s-clear'>
                     </div>
                     <div class='rmlink'>
-                        <a href='#'>
+                        <a href='/site/guest/<?=$data->id?>'>
                             Read More
                         </a>
                     </div>

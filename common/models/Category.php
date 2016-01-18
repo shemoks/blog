@@ -67,8 +67,9 @@ class Category extends \yii\db\ActiveRecord
      */
     public function getCategoryPosts()
     {
-        return $this->hasMany(Post::className(), ['id' => 'post_id'])->viaTable('category_post',['category_id' => 'id']);
+        return $this->hasMany(Post::className(), ['id' => 'post_id'])->where([Post::tableName().'.status' => 1])->viaTable('category_post',['category_id' => 'id']);
     }
+
     public function getCategoryList($isActive = true, $asObject = false)
     {
         $users = $this->find();

@@ -28,13 +28,13 @@
                             </a>
                         </div>
                         <p>
-                            <?= $data->content; ?><br/>
+                            <?php if ($data->status == 1) {echo $data->content;} else echo 'пост не активизирован'  ?><br/>
                         </p>
                     </div>
                     <div class='s-clear'>
                     </div>
                     <div class='rmlink'>
-                        <a href='#'>
+                        <a href='/site/guest/<?=$data->id?>'>
                             Read More
                         </a>
                     </div>

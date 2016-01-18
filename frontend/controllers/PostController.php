@@ -2,24 +2,26 @@
 
 namespace frontend\controllers;
 
+use common\models\AuthItem;
 use common\models\Category;
+use common\models\UploadForm;
 use Yii;
 use common\models\Post;
-use yii\data\ActiveDataProvider;
+use common\models\search\PostSearch;
+use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
 use yii\web\UploadedFile;
-use yii\widgets\ActiveForm;
+
 
 /**
  * PostController implements the CRUD actions for Post model.
  */
 class PostController extends Controller
 {
-    //public $layout = "FrontendLayout";
     public function behaviors()
     {
         return [
@@ -47,7 +49,6 @@ class PostController extends Controller
         ]);
     }
 
-
     /**
      * Displays a single Post model.
      * @param integer $id
@@ -60,29 +61,16 @@ class PostController extends Controller
         ]);
     }
 
-    /**
-     * Creates a new Post model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
     public function actionCreate()
     {
         $model = new Post();
-        $model->user_id = yii::$app->user->identity->id;
-        if (Yii::$app->request->isPost) {
-            $model->load(Yii::$app->request->post());
-            $model->main_photo = UploadedFile::getInstance($model, 'main_photo');
-            $model->main_photo->name = time() . substr(strrchr($model->main_photo->name, '.'), 0);
-            $model->upload();
-            $model->save();
-        }
+        $model->user_id = Yii::$app->user->identity->getId();
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             /** @var Category[] $categories */
             $categories = Category::find()->where(['id' => $model->category_id])->all();
             foreach ($categories as $category) {
                 $model->link('category', $category);
             }
-
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', array(
@@ -92,23 +80,49 @@ class PostController extends Controller
         }
     }
 
+
     /**
      * Updates an existing Post model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
      */
+
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
+        $model->category_id = ArrayHelper::getColumn($model->category, 'id');
+        $model->user_id = Yii::$app->user->identity->getId();
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $model->unlinkAll('category', true);
+            $categories = Category::find()->where(['id' => $model->category_id])->all();
+            foreach ($categories as $category) {
+                $model->link('category', $category);
+            }
+
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
+            $modelCategory = ArrayHelper::map(Category::find()->all(), 'id', 'tittle');
             return $this->render('update', [
-                'model' => $model,
+                'model'         => $model,
+                'modelCategory' => $modelCategory
             ]);
         }
+    }
+
+    public function actionUpload()
+    {
+        $model = new Post(); //модель куда записывать данные
+        $file = new UploadForm(); //модель для обработки фото
+        $file->uploadPath = substr(Post::$photoLink, 1); //константа типу  const PHOTO_LINK = '/uploads/promo-block/';
+        if (!empty($_FILES['Post']['name'])) { // ['PromoSlider'] - название модели, ['name'] - название поля
+            $file->imageFile = UploadedFile::getInstance($model, key($_FILES['Post']['name']));
+            $file->imageFile->name = time() . substr(strrchr($file->imageFile->name, '.'), 0); //делаю название как таймштамп
+            $file->upload();
+        }
+        return $this->respondJSON([
+            'filePath' => [$file->imageFile->name],
+        ]);
     }
 
     /**
@@ -119,8 +133,15 @@ class PostController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        $model = $this->findModel($id);
+        $model->deleted_at = time();
+        $model->status = 0;
+        $model->update();
+        $model->unlinkAll('category', true);
+        $categories = Category::find()->where(['id' => $model->category_id])->all();
+        foreach ($categories as $category) {
+            $model->delete('category', $category);
+        }
         return $this->redirect(['index']);
     }
 
@@ -140,4 +161,23 @@ class PostController extends Controller
         }
     }
 
+    public function findPost()
+    {
+        return $model = Post::find();
+    }
+
+    /**
+     * @param array $data
+     * @param int $code
+     * @param string $statusText
+     * @return array
+     */
+    protected function respondJSON($data = [], $code = 200, $statusText = 'OK')
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        Yii::$app->response->statusCode = $code;
+        Yii::$app->response->statusText = $statusText;
+
+        return $data;
+    }
 }
