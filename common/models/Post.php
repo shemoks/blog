@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\web\UploadedFile;
 
 /**
  * This is the model class for table "post".
@@ -28,6 +29,7 @@ class Post extends \yii\db\ActiveRecord
 {
     public $category_id;
     public static $photoLink = '/images/';
+
     /**
      * @inheritdoc
      */
@@ -46,7 +48,24 @@ class Post extends \yii\db\ActiveRecord
             [['content'], 'string'],
             [['user_id', 'status', 'created_at', 'updated_at', 'deleted_at'], 'integer'],
             [['tittle', 'main_photo', 'meta_description', 'meta_keywords'], 'string', 'max' => 255],
-            ['category_id','safe']
+            [
+                [
+                    'main_photo',
+                    'tittle',
+                    'user_id',
+                    'meta_description',
+                    'meta_keywords',
+                    'category_id'
+                ],
+                'safe'
+            ],
+            [
+                ['main_photo'],
+                'file',
+                'extensions' => 'png, jpg',
+                'maxSize'    => 1024 * 250,
+                'minSize'    => 0,
+            ],
         ];
     }
 
@@ -56,18 +75,18 @@ class Post extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'tittle' => Yii::t('app', 'Tittle'),
-            'content' => Yii::t('app', 'Content'),
-            'user_id' => Yii::t('app', 'User ID'),
-            'main_photo' => Yii::t('app', 'Main Photo'),
+            'id'               => Yii::t('app', 'ID'),
+            'tittle'           => Yii::t('app', 'Tittle'),
+            'content'          => Yii::t('app', 'Content'),
+            'user_id'          => Yii::t('app', 'User ID'),
+            'main_photo'       => Yii::t('app', 'Main Photo'),
             'meta_description' => Yii::t('app', 'Meta Description'),
-            'meta_keywords' => Yii::t('app', 'Meta Keywords'),
-            'status' => Yii::t('app', 'Status'),
-            'category_id' => Yii::t('app', 'Category id'),
-            'created_at' => Yii::t('app', 'Created At'),
-            'updated_at' => Yii::t('app', 'Updated At'),
-            'deleted_at' => Yii::t('app', 'Deleted At'),
+            'meta_keywords'    => Yii::t('app', 'Meta Keywords'),
+            'status'           => Yii::t('app', 'Status'),
+            'category_id'      => Yii::t('app', 'Category id'),
+            'created_at'       => Yii::t('app', 'Created At'),
+            'updated_at'       => Yii::t('app', 'Updated At'),
+            'deleted_at'       => Yii::t('app', 'Deleted At'),
         ];
     }
 
@@ -76,12 +95,14 @@ class Post extends \yii\db\ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasMany(Category::className(), ['id' => 'category_id'])->viaTable('category_post',['post_id' => 'id']);
+        return $this->hasMany(Category::className(), ['id' => 'category_id'])->viaTable('category_post', ['post_id' => 'id']);
     }
+
     public function getCategoryPost()
     {
         return $this->hasMany(CategoryPost::className(), ['post_id' => 'id']);
     }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -105,6 +126,10 @@ class Post extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+
     public function getNewPosts()
     {
         return $this->find()->where($this->tableName() . '.`status` IS NULL')->joinWith('user')->all();
@@ -114,10 +139,27 @@ class Post extends \yii\db\ActiveRecord
     /**
      * @return $this
      */
-    public function getPostsToMain(){
+    public function getPostsToMain()
+    {
         return self::find()
             ->joinWith('user')
             ->joinWith('category')
-            ->orderBy([Post::tableName().'.id'=>SORT_DESC]);
+            ->orderBy([Post::tableName() . '.id' => SORT_DESC])
+            ->where($this->tableName() . '.`deleted_at` IS NULL');
+    }
+
+    /**
+     * @return bool
+     *
+     */
+    public function upload()
+    {
+        if ($this->validate()) {
+            $this->main_photo->saveAs('images/' . $this->main_photo->baseName . '.' . $this->main_photo->extension);
+            $this->main_photo = $this->main_photo->baseName . '.' . $this->main_photo->extension;
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -33,20 +33,20 @@ use yii\widgets\Breadcrumbs;
 
 
 if (!Yii::$app->user->isGuest) {
-    if (Yii::$app->user->identity->role == AuthItem::ROLE_BLOGGER) {
+    if (Yii::$app->user->identity->role == AuthItem::ROLE_BLOGGER || Yii::$app->user->identity->role == AuthItem::ROLE_MODER || Yii::$app->user->identity->role == AuthItem::ROLE_ADMIN) {
         $menuItems[] = [
             'text'        => Yii::t('app', 'Управление'),
             'subMenuData' => [
                 [
-                    'link' => Url::to(['#']),
+                    'link' => Url::to(['site/posts/']),
                     'text' => Yii::t('app', 'Мои посты'),
                 ],
                 [
-                    'link' => Url::to(['#']),
+                    'link' => Url::to(['comment/create']),
                     'text' => Yii::t('app', 'Коментарии к постам'),
                 ],
                 [
-                    'link' => Url::to(['#']),
+                    'link' => Url::to(['post/create']),
                     'text' => Yii::t('app', 'Написать пост'),
                 ],
             ],

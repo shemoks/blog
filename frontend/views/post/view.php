@@ -41,5 +41,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'deleted_at',
         ],
     ]) ?>
-
+    <?php if (!empty($model->main_photo)) { ?>
+        <div class="image">
+            <img src="/images/<?= $model->main_photo ?>">
+        </div>
+    <?php } ?>
 </div>

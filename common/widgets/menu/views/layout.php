@@ -2,6 +2,7 @@
     <div class='container'>
         <div class='navbar-header'>
             <a class='navbar-brand' href='/'><i class='fa fa-home'></i></a>
+
             <button class='navbar-toggle' data-target='#bs-example-navbar-collapse-1' data-toggle='collapse' type='button'>
                 <span class='sr-only'>Toggle navigation</span>
                 <span class='icon-bar'></span>

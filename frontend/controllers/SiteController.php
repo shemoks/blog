@@ -250,12 +250,36 @@ class SiteController extends Controller
         ]);
     }
 
-    public function actionPosts()
+    public function actionPost()
     {
         $dataProvider = Post::find()->All();
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     *
+     *
+     * @return string
+     */
+    public function actionPosts()
+    {
+        $id = yii::$app->user->id;
+        $model = Post::find()
+            ->where(['user_id' => $id])->All();
+       /* $countQuery = clone $dataProvider;
+        $pages = new Pagination([
+            'totalCount'      => $countQuery->count(),
+            'defaultPageSize' => 10
+        ]);
+        $model = $dataProvider->offset($pages->offset)
+            ->limit($pages->limit)
+            ->one();*/
+        return $this->render('posts', [
+            'model' => $model,
+      /*      'pages' => $pages,*/
         ]);
     }
 }

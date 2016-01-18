@@ -18,7 +18,12 @@ use yii\widgets\ActiveForm;
 
 <div class="post-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+       'id'                   => 'post',
+        //    'enableClientValidation' => false,
+      //  'enableAjaxValidation' => true,
+      'options'              => ['class' => 'form-horizontal', 'enctype' => 'multipart/form-data'],
+    ]); ?>
 
     <?= $form->field($model, 'tittle')->textInput(['maxlength' => true]) ?>
 
@@ -41,8 +46,7 @@ use yii\widgets\ActiveForm;
             ],
         ])->label('category');
     ?>
-
-    <?= $form->field($model, 'main_photo')->textInput(['maxlength' => true]) ?>
+   <?= $form->field($model, 'main_photo')->fileInput() ?>
 
     <?= $form->field($model, 'meta_description')->textInput(['maxlength' => true]) ?>
 
@@ -54,6 +58,13 @@ use yii\widgets\ActiveForm;
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
-    <?php ActiveForm::end(); ?>
+    <?php ActiveForm::end();
+
+    if (!empty($model->main_photo)) { ?>
+        <div class="image">
+            <img src="/images/<?= $model->main_photo ?>">
+        </div>
+    <?php }
+     ?>
 
 </div>

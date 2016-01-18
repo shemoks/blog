@@ -2,15 +2,15 @@
     <?php
     use common\models\Post;
     use yii\widgets\LinkPager;
-    $this->title = 'Posts ' . $model->tittle;
-    foreach ($model->categoryPosts as $data) {
+
+    foreach ($model as $data) {
         ?>
         <div class='post-div'>
             <h2 class='jqmaintitle'>
                 <?= $data->tittle; ?>
 
             </h2>
-           <div class='post-header-home'>
+            <div class='post-header-home'>
                                 <span class='post-author vcard'>
                                 <i class='fa fa-user'></i>
                                 <span class='fn'>
@@ -51,16 +51,24 @@
                 </span>
                 <span class='post-labels'>
                                     <i class='fa fa-tags'></i>
+                    <?php
+                    if (isset($data->category)) {
+                        foreach ($data->category as $category) {
+                            ?>
                             <a href='#' rel='tag'>
-                                <?=$model->tittle?>
+                                <?=$category->tittle?>
                             </a>
+                        <?php
+                        }
+                    }
+                    ?>
                 </span>
             </div>
         </div>
     <?php } ?>
 </div>
 
-<?php
+<?php /*
 echo LinkPager::widget([
     'pagination' => $pages,
-]);?>
+]);*/ ?>

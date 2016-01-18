@@ -10,11 +10,11 @@
                 <?= $data->tittle; ?>
 
             </h2>
-            <div class='post-header-home'>
+         <div class='post-header-home'>
                                 <span class='post-author vcard'>
                                 <i class='fa fa-user'></i>
                                 <span class='fn'>
-                                <?= $data->user->username; ?>
+                                <?= $data->user->username;?>
                                 </span>
                                 </span>
             </div>

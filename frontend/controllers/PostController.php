@@ -2,12 +2,17 @@
 
 namespace frontend\controllers;
 
+use common\models\Category;
 use Yii;
 use common\models\Post;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
+use yii\web\UploadedFile;
+use yii\widgets\ActiveForm;
 
 /**
  * PostController implements the CRUD actions for Post model.
@@ -19,7 +24,7 @@ class PostController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class'   => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
                 ],
@@ -33,14 +38,15 @@ class PostController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Post::find(),
-        ]);
+        $searchModel = new PostSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
+            'searchModel'  => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
+
 
     /**
      * Displays a single Post model.
@@ -62,13 +68,27 @@ class PostController extends Controller
     public function actionCreate()
     {
         $model = new Post();
-
+        $model->user_id = yii::$app->user->identity->id;
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            $model->main_photo = UploadedFile::getInstance($model, 'main_photo');
+            $model->main_photo->name = time() . substr(strrchr($model->main_photo->name, '.'), 0);
+            $model->upload();
+            $model->save();
+        }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            /** @var Category[] $categories */
+            $categories = Category::find()->where(['id' => $model->category_id])->all();
+            foreach ($categories as $category) {
+                $model->link('category', $category);
+            }
+
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+            return $this->render('create', array(
+                'model'         => $model,
+                'modelCategory' => ArrayHelper::map(Category::find()->all(), 'id', 'tittle')
+            ));
         }
     }
 
@@ -119,4 +139,5 @@ class PostController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
 }
