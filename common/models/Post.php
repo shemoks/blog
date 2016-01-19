@@ -158,9 +158,6 @@ class Post extends \yii\db\ActiveRecord
             ->where($this->tableName() . '.`deleted_at` IS NULL')
             ->andWhere($this->tableName() . '.`status` = 1');
     }
-    /**
-     * @return bool
-     *
-     */
+
 
 }

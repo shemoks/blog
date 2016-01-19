@@ -2,6 +2,7 @@
 
 //$model
 
+use common\models\Comment;
 use common\models\Post;
 use common\widgets\similar\SimilarWidget;
 use common\widgets\social\SocialWidget;
@@ -142,9 +143,10 @@ $this->title = $model->tittle;
         </div>
 
 <div class="send-comment">
+    // Создание комментария не закончено!!!
     <?php
     if(!Yii::$app->user->isGuest ){
-        $modelComment = new \common\models\Comment();
+        $modelComment = new Comment();
         $form = ActiveForm::begin([
             'id'                   => 'comment',
             'options'              => ['class' => 'form-horizontal'],
@@ -160,6 +162,4 @@ $this->title = $model->tittle;
         ActiveForm::end();
     }
     ?>
-</div>
-
 </div>

@@ -41,10 +41,10 @@ if (!Yii::$app->user->isGuest) {
                     'link' => Url::to(['site/posts/']),
                     'text' => Yii::t('app', 'Мои посты'),
                 ],
-                [
-                    'link' => Url::to(['comment/create']),
+            /*    [
+                    'link' => Url::to(['comment/index']),
                     'text' => Yii::t('app', 'Коментарии к постам'),
-                ],
+                ],*/
                 [
                     'link' => Url::to(['post/create']),
                     'text' => Yii::t('app', 'Написать пост'),
@@ -52,7 +52,7 @@ if (!Yii::$app->user->isGuest) {
             ],
         ];
     }
-    $menuItems[] = [
+     $menuItems[] = [
         'link' => Url::to(['/site/logout']),
         'text' => Yii::t('app', 'Выход'),
         'linkOptions' => ['data-method' => 'post', 'clas'=>'test']

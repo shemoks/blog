@@ -36,7 +36,15 @@ class Comment extends \yii\db\ActiveRecord
         return [
             [['post_id', 'text'], 'required'],
             [['post_id', 'status', 'user_id', 'created_at', 'updated_at'], 'integer'],
-            [['text'], 'string']
+            [['text'], 'string'],
+            [
+                [
+                    'text',
+                    'post_id',
+                    'user_id'
+                ],
+                'safe']
+
         ];
     }
 
