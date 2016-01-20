@@ -1,53 +1,80 @@
-<?php
+<div id='list-main'>
+    <?php
+    use common\models\Post;
+    use yii\helpers\Url;
+    use yii\widgets\LinkPager;
 
-/* @var $this yii\web\View */
-
-$this->title = 'My Yii Application';
-?>
-<div class="site-index">
-
-    <div class="jumbotron">
-        <h1>Congratulations!</h1>
-
-        <p class="lead">You have successfully created your Yii-powered application.</p>
-
-        <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
-    </div>
-
-    <div class="body-content">
-
-        <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
+    foreach ($model as $data) {
+        ?>
+        <div class='post-div'>
+            <h2 class='jqmaintitle'>
+                <a href="<?= Url::to(['/site/view/'])?>/<?=$data->id?>">
+                <?= $data->tittle; ?>
+                </a>
+            </h2>
+         <div class='post-header-home'>
+                                <span class='post-author vcard'>
+                                <i class='fa fa-user'></i>
+                                <span class='fn'>
+                                <?= $data->user->username;?>
+                                </span>
+                                </span>
             </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
+            <div class='homapge-thumb'>
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
+                <div class='post hentry'>
+                    <div class='post-min-content'>
+                        <div class="separator">
+                            <a href="#">
+                                <img border="0"
+                                     src="<?= Post::$photoLink . $data->main_photo ?>"/>
+                            </a>
+                        </div>
+                        <a href="<?= Url::to(['/site/view/'])?>/<?=$data->id?>">
+                        <p>
+                            <?= $data->content; ?><br/>
+                        </p>
+                        </a>
+                    </div>
+                    <div class='s-clear'>
+                    </div>
+                    <div class='rmlink'>
+                        <a href="<?= Url::to(['/site/view/'])?>/<?=$data->id?>">
+                           Read More
+                        </a>
+                    </div>
+                    <div class='s-clear'>
+                    </div>
+                </div>
 
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
             </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
+            <div class='post-header-label'>
+                <span class='post-timestamp'>
+                    <i class='fa fa-clock-o'></i>
+                    <abbr class='published' title='2014-03-15T10:00:00-07:00'>
+                        <?= strtotime('Y-m-d', $data->created_at); ?>
+                    </abbr>
+                </span>
+                <span class='post-labels'>
+                                    <i class='fa fa-tags'></i>
+                    <?php
+                    if (isset($data->category)) {
+                        foreach ($data->category as $category) {
+                            ?>
+                            <a href='#' rel='tag'>
+                                <?=$category->tittle?>
+                            </a>
+                        <?php
+                        }
+                    }
+                    ?>
+                </span>
             </div>
         </div>
-
-    </div>
+    <?php } ?>
 </div>
+
+<?php
+echo LinkPager::widget([
+    'pagination' => $pages,
+]);?>

@@ -1,54 +1,30 @@
-Yii 2 Advanced Project Template
-===============================
+ php yii migrate --migrationPath=@yii/rbac/migrations  # Миграция таблиц rbac из фреймворка
+- в console/controllers/RbacController.php создала роли
+- в common/components/rbac/UserRoleRule.php создала правила для ролей
+- создала миграцию для добавления первого пользователя m160108_185342_admin_user
+- php yii rbac/init 1    # Сделать первого пользователя - админом (прописано в console/controllers/RbacController.php) и заполнить таблицы
+- через comoser добавила AdminLte тему и добавила стандартные layouts
+_______________________________________________________________________________
+- создала миграции для добавления таблиц category, post,category_post, comment в базу данных
+- cоздала с помощью CRUD модели, контроллеры и вьюхи
 
-Yii 2 Advanced Project Template is a skeleton [Yii 2](http://www.yiiframework.com/) application best for
-developing complex Web applications with multiple tiers.
+В базе есть роли:
+admin (вход в админку admin.blog/loc)
+moder - не может удалять пользователя, имеет доступ к админке
+user - при регистрации роль по умолчанию, за исключением того, что пользователь на форме может поставить
+галочку - хочу писать посты, тогда присваивается роль blogger
+user в отличае от guest может только комментировать посты
+Ни user, ни blogger не могут создавать категории
+В админке не создаются посты, а только редактируются админом и модератором
+------------------------------------------------------------------------------------
+Админ создан сразу при rbac миграции hp yii rbac/init 1 (shemshur пароль 123456)
+------------------------------------------------------------------------------------
 
-The template includes three tiers: front end, back end, and console, each of which
-is a separate Yii application.
-
-The template is designed to work in a team development environment. It supports
-deploying the application in different environments.
-
-Documentation is at [docs/guide/README.md](docs/guide/README.md).
-
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/yii2-app-advanced/v/stable.png)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Total Downloads](https://poser.pugx.org/yiisoft/yii2-app-advanced/downloads.png)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Build Status](https://travis-ci.org/yiisoft/yii2-app-advanced.svg?branch=master)](https://travis-ci.org/yiisoft/yii2-app-advanced)
-
-DIRECTORY STRUCTURE
--------------------
-
-```
-common
-    config/              contains shared configurations
-    mail/                contains view files for e-mails
-    models/              contains model classes used in both backend and frontend
-console
-    config/              contains console configurations
-    controllers/         contains console controllers (commands)
-    migrations/          contains database migrations
-    models/              contains console-specific model classes
-    runtime/             contains files generated during runtime
-backend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains backend configurations
-    controllers/         contains Web controller classes
-    models/              contains backend-specific model classes
-    runtime/             contains files generated during runtime
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-frontend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains frontend configurations
-    controllers/         contains Web controller classes
-    models/              contains frontend-specific model classes
-    runtime/             contains files generated during runtime
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-    widgets/             contains frontend widgets
-vendor/                  contains dependent 3rd-party packages
-environments/            contains environment-based overrides
-tests                    contains various tests for the advanced application
-    codeception/         contains tests developed with Codeception PHP Testing Framework
-```
+Во фронтенде к меню имеют доступ только blogger, moder,admin
+-------------------------------------------------------------------------------------
+В контенте отображаются только те посты, которым в админке админ выставил статус 1
+-------------------------------------------------------------------------------------
+Для выведения перечня категорий используется виджет, но таблица категорий должна быть заполнена (через админку)
+На экран выводятся только те категории, статус которых = 1.
+--------------------------------------------------------------------------------------
+Блоггер, админ и модератор могут посмотреть свои посты. Отображаются все посты, которые создавались когда либо, но у тех, которые не проверены админом или модератором, контент содержит надпись -"пост не активизирован"
