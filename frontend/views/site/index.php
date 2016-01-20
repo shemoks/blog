@@ -8,7 +8,7 @@
         ?>
         <div class='post-div'>
             <h2 class='jqmaintitle'>
-                <a href="/site/view/<?=$data->id?>">
+                <a href="<?= Url::to(['/site/view/'])?>/<?=$data->id?>">
                 <?= $data->tittle; ?>
                 </a>
             </h2>
@@ -30,7 +30,7 @@
                                      src="<?= Post::$photoLink . $data->main_photo ?>"/>
                             </a>
                         </div>
-                        <a href="/site/view/<?=$data->id?>">
+                        <a href="<?= Url::to(['/site/view/'])?>/<?=$data->id?>">
                         <p>
                             <?= $data->content; ?><br/>
                         </p>
@@ -39,7 +39,7 @@
                     <div class='s-clear'>
                     </div>
                     <div class='rmlink'>
-                        <a href='/site/view/<?=$data->id?>'>
+                        <a href="<?= Url::to(['/site/view/'])?>/<?=$data->id?>">
                            Read More
                         </a>
                     </div>

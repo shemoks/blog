@@ -11,10 +11,13 @@
                     <ul>
                         <!--ПОВТОР-->
                         <?php
+                        use yii\helpers\Url;
+
+                        /** @var array $categories */
                         foreach($categories as $category) {
                         ?>
                         <li>
-                            <a dir='ltr' href='/site/category/<?=$category->id?>'>
+                            <a dir='ltr' href="<?= Url::to(['/site/category/'])?>/<?=$category->id?>">
                                 <?=$category->tittle?>
                             </a>
                         </li>
